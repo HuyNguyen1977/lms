@@ -154,5 +154,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Liên hệ
 
-- Email: contact@lms.com
+- Email: huycnn@gmail.com
 - Phone: 0123 456 789
