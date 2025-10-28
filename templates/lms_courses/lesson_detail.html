@@ -1,0 +1,82 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Nội dung khóa học</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for l in course.lessons.all %}
+                        <a href="{% url 'lesson_detail' course.id l.id %}" 
+                           class="list-group-item list-group-item-action {% if l.id == lesson.id %}active{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ l.title }}</h6>
+                                    <small class="text-muted">{{ l.duration_minutes }} phút</small>
+                                </div>
+                                {% if l.is_free %}
+                                    <span class="badge bg-success">Miễn phí</span>
+                                {% endif %}
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">{{ lesson.title }}</h4>
+                        <span class="badge bg-primary">{{ lesson.duration_minutes }} phút</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if lesson.video_url %}
+                        <div class="mb-4">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="{{ lesson.video_url }}" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="lesson-content">
+                        {{ lesson.content|linebreaks }}
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <div class="d-flex justify-content-between mt-4">
+                        {% if previous_lesson %}
+                            <a href="{% url 'lesson_detail' course.id previous_lesson.id %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Bài trước
+                            </a>
+                        {% else %}
+                            <div></div>
+                        {% endif %}
+                        
+                        {% if next_lesson %}
+                            <a href="{% url 'lesson_detail' course.id next_lesson.id %}" class="btn btn-primary">
+                                Bài tiếp theo<i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'course_learning' course.id %}" class="btn btn-success">
+                                <i class="fas fa-check me-2"></i>Hoàn thành khóa học
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

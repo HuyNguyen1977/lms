@@ -1,0 +1,124 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Danh sách khóa học - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold">Khóa học</h1>
+            <p class="lead text-muted">Khám phá các khóa học chất lượng cao</p>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="get" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Tìm kiếm khóa học..." value="{{ search_query }}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <select name="category" class="form-select" onchange="this.form.submit()">
+                <option value="">Tất cả danh mục</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if current_category == category.id|stringformat:"s" %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card course-card h-100">
+                {% if course.thumbnail %}
+                    <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text text-muted flex-grow-1">{{ course.description|truncatewords:20 }}</p>
+                    
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-primary">{{ course.get_difficulty_level_display }}</span>
+                            <span class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ course.duration_hours }}h
+                            </span>
+                        </div>
+                        
+                        {% if course.category %}
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-tag me-1"></i>{{ course.category.name }}
+                                </small>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 text-success mb-0">
+                                {% if course.price > 0 %}
+                                    {{ course.price|floatformat:0 }}đ
+                                {% else %}
+                                    Miễn phí
+                                {% endif %}
+                            </span>
+                            <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-primary">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4>Không tìm thấy khóa học</h4>
+            <p class="text-muted">Hãy thử tìm kiếm với từ khóa khác hoặc chọn danh mục khác.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if courses.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if courses.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">Đầu</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ courses.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">Trước</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">{{ courses.number }} / {{ courses.paginator.num_pages }}</span>
+            </li>
+            
+            {% if courses.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ courses.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">Tiếp</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ courses.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">Cuối</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
