@@ -1,5 +1,5 @@
 Django
-mysqlclient
+PyMySQL
 Pillow
 python-decouple
 django-crispy-forms
