@@ -3,6 +3,9 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+from django.contrib.auth import logout
 from .models import Profile
 
 
@@ -66,3 +69,16 @@ def edit_profile(request):
         return redirect('profile')
     
     return render(request, 'users/edit_profile.html', {'profile': profile})
+
+class CustomLoginView(LoginView):
+    template_name = 'users/login.html'
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        return reverse_lazy('profile')
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'Ban da dang xuat thanh cong.')
+    return redirect('login')    
